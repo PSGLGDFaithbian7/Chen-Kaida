@@ -1,0 +1,43 @@
+//-----------------------------------------------
+//	module name: cLastFifo1
+//	author: Tong Fu, Lingzhuang Zhang
+//	version: 1st version (2022-11-15)
+//-----------------------------------------------
+
+`timescale 1ns / 1ps
+
+module cLastFifo1(
+i_drive,rst,
+o_free,o_driveNext,
+o_fire_1
+);
+
+input i_drive, rst;
+output o_free, o_driveNext;
+output o_fire_1;
+
+wire w_outRRelay,w_outARelay;
+wire w_outR;
+wire w_driveNext;
+
+//pipeline
+sender sender(
+	.i_drive(i_drive),
+	.o_free(o_free),
+	.outR(w_outRRelay),
+	.i_free(w_driveNext),
+	.rst(rst)
+);
+
+relay relay0(
+	.inR(w_outRRelay),
+	.inA(w_outARelay),
+	.outR(w_outR),
+	.outA(w_outR),
+	.fire(o_fire_1),
+	.rst(rst)
+);
+
+delay2U outdelay0 (.inR(o_fire_1), .outR(w_driveNext));
+delay2U outdelay1 (.inR(w_driveNext),.outR(o_driveNext));
+endmodule
